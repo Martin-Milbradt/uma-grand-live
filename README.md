@@ -50,10 +50,22 @@ need the height. It is used only above 1700px wide and 820px tall, and only in l
 Everything else, phones, half-screen windows, short windows and rotated monitors, gets the
 narrow layout, which scrolls and so has neither constraint.
 
-The narrow layout adds a card column at each of 640, 1024, 1280 and 1536px, so a portrait
-tablet or a half-screen desktop window is not one thin ribbon of cards. Below 520px of height,
-meaning a landscape phone, the header drops its hint line and puts the stage picker beside the
-totals.
+The narrow layout adds a card column at each of 640, 1024, 1280, 1536 and 1800px, keeping cards
+at roughly 300px, so a portrait tablet or a half-screen desktop window is not one thin ribbon.
+
+Its header collapses a step at a time as the window shrinks, so nothing is dropped, it is only
+rearranged:
+
+| Width | Header |
+| --- | --- |
+| From 1280px | Stage picker beside the title, both totals panels side by side |
+| From 768px | Stage picker beside the title, totals panels stacked |
+| Below 768px | Stage picker on its own row |
+
+Each totals panel decides separately, from its own width rather than the window's, whether the
+tokens fit between the title and the sum or have to drop to a second line. Below 520px of
+height, meaning a landscape phone, the header also drops its hint line and puts the two panels
+side by side.
 
 ## Data
 

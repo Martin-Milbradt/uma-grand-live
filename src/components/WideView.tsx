@@ -34,20 +34,24 @@ export function WideView({
 
         <StagePicker progress={progress} onSelect={onSelectProgress} layout="row" />
 
-        <TotalsPanel
-          title="Still to buy — unlocked"
-          totals={remaining.unlocked}
-          songCount={remaining.unlockedCount}
-          skippedCount={remaining.unlockedSkippedCount}
-          accent="amber"
-        />
-        <TotalsPanel
-          title="Still to buy — total"
-          totals={remaining.all}
-          songCount={remaining.allCount}
-          skippedCount={remaining.allSkippedCount}
-          accent="neutral"
-        />
+        <div className="min-w-0 flex-1">
+          <TotalsPanel
+            title="Still to buy — unlocked"
+            totals={remaining.unlocked}
+            songCount={remaining.unlockedCount}
+            skippedCount={remaining.unlockedSkippedCount}
+            accent="amber"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <TotalsPanel
+            title="Still to buy — total"
+            totals={remaining.all}
+            songCount={remaining.allCount}
+            skippedCount={remaining.allSkippedCount}
+            accent="neutral"
+          />
+        </div>
 
         <OwnedBadge owned={ownedCount} total={totalCount} />
         <ResetButton onReset={onReset} />

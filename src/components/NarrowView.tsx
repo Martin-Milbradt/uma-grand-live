@@ -1,5 +1,4 @@
 import { isUnlocked, STAGE_ACCENT, STAGE_INFO } from '../stages'
-import { grandTotal } from '../totals'
 import { OwnedBadge, ResetButton, StagePicker } from './HeaderControls'
 import { SongCard } from './SongCard'
 import { TotalsPanel } from './TotalsPanel'
@@ -30,25 +29,26 @@ export function NarrowView({
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
       <header className="flex shrink-0 flex-col gap-2 border-b border-white/10 px-3 pt-2 pb-2.5">
-        <div className="flex items-center gap-2">
-          <h1 className="min-w-0 flex-1 text-base leading-tight font-bold">
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="min-w-0 flex-1 text-base leading-tight font-bold md:flex-none">
             Grand Live
-            {/* A landscape phone has no height to spare, so the hint and the career line go. */}
+            {/* A landscape phone has no height to spare for the hint. */}
             <span className="block truncate text-[10px] font-normal text-neutral-500 short:hidden">
               Tap to buy · Skip to drop the cost
             </span>
           </h1>
 
+          {/* Slots in beside the title once the row is wide enough to hold it. */}
+          <div className="order-last w-full md:order-none md:w-auto md:min-w-0 md:max-w-lg md:flex-1">
+            <StagePicker progress={progress} onSelect={onSelectProgress} layout="grid" />
+          </div>
+
           <OwnedBadge owned={ownedCount} total={totalCount} />
           <ResetButton onReset={onReset} />
         </div>
 
-        {/* Side by side once the header can no longer afford two stacked rows. */}
-        <div className="flex flex-col gap-2 short:flex-row short:items-start">
-          <div className="w-full max-w-lg short:w-2/5">
-            <StagePicker progress={progress} onSelect={onSelectProgress} layout="grid" />
-          </div>
-
+        {/* Side by side once there is width for it, or when the height leaves no other option. */}
+        <div className="flex flex-col gap-2 xl:flex-row short:flex-row">
           <div className="min-w-0 flex-1">
             <TotalsPanel
               title="Still to buy — unlocked"
@@ -56,19 +56,19 @@ export function NarrowView({
               songCount={remaining.unlockedCount}
               skippedCount={remaining.unlockedSkippedCount}
               accent="amber"
-              stacked
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <TotalsPanel
+              title="Still to buy — total"
+              totals={remaining.all}
+              songCount={remaining.allCount}
+              skippedCount={remaining.allSkippedCount}
+              accent="neutral"
             />
           </div>
         </div>
-
-        <p className="text-[11px] leading-none text-neutral-500 short:hidden">
-          Whole career{' '}
-          <span className="font-semibold tabular-nums text-neutral-300">{grandTotal(remaining.all)}</span>
-          {` · ${remaining.allCount} left`}
-          {remaining.allSkippedCount > 0 && (
-            <span className="text-amber-300/70">{` · ${remaining.allSkippedCount} skipped`}</span>
-          )}
-        </p>
       </header>
 
       <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-8">
@@ -84,7 +84,8 @@ export function NarrowView({
             </h2>
 
             {/* Portrait tablets and portrait monitors are wide enough for more than one column. */}
-            <div className="grid gap-2 py-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            {/* A column roughly every 300px, which is about what a card needs to stay readable. */}
+            <div className="grid gap-2 py-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6">
               {songs.map((song) => (
                 // min-w-0: grid items default to min-content width, which a card would exceed.
                 <div key={song.id} className={`min-w-0 ${CARD_HEIGHT}`}>

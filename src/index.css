@@ -1,9 +1,16 @@
 @import 'tailwindcss';
 
+/** The built bundle carries a copy of this stylesheet, so scanning it would keep every class
+    the app has ever used alive forever. */
+@source not "../grand-live.html";
+
 /** A landscape phone: wide enough, but with almost no height to give the header. */
 @custom-variant short (@media (max-height: 520px));
 
 @theme {
+  /* In rem like the built-in breakpoints, or Tailwind sorts this rule ahead of them and the
+     smaller breakpoints win on source order. 112.5rem is 1800px. */
+  --breakpoint-3xl: 112.5rem;
   --color-stage-0: oklch(0.72 0.14 250);
   --color-stage-1: oklch(0.74 0.15 165);
   --color-stage-2: oklch(0.78 0.15 85);
