@@ -4,20 +4,12 @@ import type { Progress } from '../types'
 interface StagePickerProps {
   progress: Progress
   onSelect: (stage: Progress) => void
-  /** 'grid' spreads four short-labelled chips over the full width, for the narrow layout. */
-  layout: 'row' | 'grid'
 }
 
-export function StagePicker({ progress, onSelect, layout }: StagePickerProps) {
-  const grid = layout === 'grid'
-
+/** Four equal chips over whatever width it is given, short-labelled so they survive a phone. */
+export function StagePicker({ progress, onSelect }: StagePickerProps) {
   return (
-    <div
-      className={[
-        'rounded-lg border border-white/10 bg-white/[0.03] p-1',
-        grid ? 'grid grid-cols-4 gap-1' : 'flex shrink-0 items-center gap-1',
-      ].join(' ')}
-    >
+    <div className="grid grid-cols-4 gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-1">
       {PROGRESS_ORDER.map((stage) => {
         const active = progress === stage
 
@@ -28,12 +20,11 @@ export function StagePicker({ progress, onSelect, layout }: StagePickerProps) {
             onClick={() => onSelect(stage)}
             aria-pressed={active}
             className={[
-              'cursor-pointer rounded-md text-[11px] leading-tight font-medium transition',
-              grid ? 'min-w-0 px-1 py-1.5' : 'px-2.5 py-1',
+              'min-w-0 cursor-pointer rounded-md px-1 py-1.5 text-[11px] leading-tight font-medium transition',
               active ? 'bg-amber-400 text-neutral-950' : 'text-neutral-400 hover:bg-white/5 hover:text-neutral-200',
             ].join(' ')}
           >
-            <span className="block truncate">{grid ? STAGE_INFO[stage].short : STAGE_INFO[stage].label}</span>
+            <span className="block truncate">{STAGE_INFO[stage].short}</span>
             <span className={`block truncate text-[9px] ${active ? 'opacity-70' : 'text-neutral-600'}`}>
               {STAGE_INFO[stage].turn}
             </span>

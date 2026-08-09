@@ -35,25 +35,18 @@ column header carries the same count for its own tier.
 `Reset` clears every purchase and returns the stage to *From the start*. Skipped songs survive
 it: the list of songs you are never buying outlives a single career.
 
-## Layouts
+## Layout
 
-There are two, swapped live as the window resizes or the device rotates:
+One layout for every screen: a pinned header over a scrolling list of songs, split into stage
+sections whose headings stick to the top of the scroller. It holds from a 360px phone up to a
+monitor, where the whole career fits without scrolling anyway, so there is no second layout to
+switch to and no width at which the page falls apart.
 
-| Layout | Shape |
-| --- | --- |
-| Wide | One screenful, no scrolling. Each stage is a column, cards shrink to the window height |
-| Narrow | A pinned header over a scrolling list, stages as sections with sticky headings |
+The grid takes a card column at each of 640, 1024, 1280, 1536 and 1800px, keeping cards at
+roughly 300px, which is about what one needs to stay readable. At 1920px that is six columns
+and the career runs about 70px past the fold; at 2560px it all fits.
 
-The wide layout is the one that has to be earned, because fitting a whole career on one screen
-costs both dimensions: five columns of readable cards need the width, and eight stacked rows
-need the height. It is used only above 1700px wide and 820px tall, and only in landscape.
-Everything else, phones, half-screen windows, short windows and rotated monitors, gets the
-narrow layout, which scrolls and so has neither constraint.
-
-The narrow layout adds a card column at each of 640, 1024, 1280, 1536 and 1800px, keeping cards
-at roughly 300px, so a portrait tablet or a half-screen desktop window is not one thin ribbon.
-
-Its header collapses a step at a time as the window shrinks, so nothing is dropped, it is only
+The header collapses a step at a time as the window shrinks, so nothing is dropped, it is only
 rearranged:
 
 | Width | Header |
@@ -89,9 +82,9 @@ npm run typecheck
 npm run build      # regenerates grand-live.html
 ```
 
-`App.tsx` owns all the state and hands the same `ViewProps` to either `DesktopView` or
-`MobileView`; the two differ in arrangement only, never in data. `npm run build` must be re-run
-to fold changes into `grand-live.html`.
+`App.tsx` owns the state and the page; everything under `src/components/` is presentational and
+takes what it draws as props. `npm run build` must be re-run to fold changes into
+`grand-live.html`.
 
 ## Publishing
 
