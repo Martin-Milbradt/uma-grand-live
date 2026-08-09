@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-stage-0: oklch(0.72 0.14 250);
+  --color-stage-1: oklch(0.74 0.15 165);
+  --color-stage-2: oklch(0.78 0.15 85);
+  --color-stage-3: oklch(0.72 0.16 25);
+  --color-stage-4: oklch(0.68 0.05 280);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-neutral-950 text-neutral-100 antialiased;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
