@@ -26,24 +26,27 @@ const MAX_ROWS = Math.max(...SONGS_BY_STAGE.map(({ songs }) => songs.length))
 const isProgress = (value: unknown): value is Progress =>
   typeof value === 'string' && (PROGRESS_ORDER as readonly string[]).includes(value)
 
+const reviveIds = (raw: unknown): Set<string> | null =>
+  Array.isArray(raw) ? new Set(raw.filter((id): id is string => typeof id === 'string')) : null
+
+const withToggled = (ids: ReadonlySet<string>, id: string): Set<string> => {
+  const next = new Set(ids)
+  if (!next.delete(id)) next.add(id)
+  return next
+}
+
 export default function App() {
   const [progress, setProgress] = usePersistentState<Progress>('grand-live.progress', 'start', (raw) =>
     isProgress(raw) ? raw : null,
   )
-  const [bought, setBought] = usePersistentState<Set<string>>('grand-live.bought', new Set(), (raw) =>
-    Array.isArray(raw) ? new Set(raw.filter((id): id is string => typeof id === 'string')) : null,
-  )
+  const [bought, setBought] = usePersistentState<Set<string>>('grand-live.bought', new Set(), reviveIds)
+  // Songs the user never intends to buy. Kept in its own key so Reset leaves the list alone.
+  const [skipped, setSkipped] = usePersistentState<Set<string>>('grand-live.skipped', new Set(), reviveIds)
 
-  const remaining = useMemo(() => sumRemaining(SONGS, bought, progress), [bought, progress])
+  const remaining = useMemo(() => sumRemaining(SONGS, bought, skipped, progress), [bought, skipped, progress])
 
   const isOwned = (song: Song): boolean => bought.has(song.id) || isAutoOwned(song, progress)
   const ownedCount = SONGS.filter(isOwned).length
-
-  const toggle = (id: string) => {
-    const next = new Set(bought)
-    if (!next.delete(id)) next.add(id)
-    setBought(next)
-  }
 
   const reset = () => {
     setBought(new Set())
@@ -55,7 +58,7 @@ export default function App() {
       <header className="flex shrink-0 items-center gap-3">
         <h1 className="shrink-0 text-sm leading-tight font-bold">
           Grand Live
-          <span className="block text-[10px] font-normal text-neutral-500">Click a song to buy it</span>
+          <span className="block text-[10px] font-normal text-neutral-500">Click to buy · Skip to drop the cost</span>
         </h1>
 
         <div className="flex shrink-0 items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-1">
@@ -80,8 +83,20 @@ export default function App() {
           ))}
         </div>
 
-        <TotalsPanel title="Still to buy — unlocked" totals={remaining.unlocked} songCount={remaining.unlockedCount} accent="amber" />
-        <TotalsPanel title="Still to buy — total" totals={remaining.all} songCount={remaining.allCount} accent="neutral" />
+        <TotalsPanel
+          title="Still to buy — unlocked"
+          totals={remaining.unlocked}
+          songCount={remaining.unlockedCount}
+          skippedCount={remaining.unlockedSkippedCount}
+          accent="amber"
+        />
+        <TotalsPanel
+          title="Still to buy — total"
+          totals={remaining.all}
+          songCount={remaining.allCount}
+          skippedCount={remaining.allSkippedCount}
+          accent="neutral"
+        />
 
         <div
           title="Songs owned, including the two awarded free"
@@ -97,7 +112,7 @@ export default function App() {
         <button
           type="button"
           onClick={reset}
-          title="Clear purchases and go back to the start"
+          title="Clear purchases and go back to the start. Skipped songs stay skipped."
           className="shrink-0 cursor-pointer rounded-md border border-white/10 px-3 py-1.5 text-xs text-neutral-400 transition hover:border-white/25 hover:text-neutral-200"
         >
           Reset
@@ -127,7 +142,9 @@ export default function App() {
                     song={song}
                     bought={isOwned(song)}
                     locked={!isUnlocked(song, progress)}
-                    onToggle={() => toggle(song.id)}
+                    skipped={skipped.has(song.id)}
+                    onToggle={() => setBought(withToggled(bought, song.id))}
+                    onToggleSkip={() => setSkipped(withToggled(skipped, song.id))}
                   />
                 ))}
               </div>

@@ -9,18 +9,35 @@ export interface Remaining {
   unlocked: TokenTotals
   allCount: number
   unlockedCount: number
+  /** Unbought songs the user marked as never buying, so the panels can show the totals are filtered. */
+  allSkippedCount: number
+  unlockedSkippedCount: number
 }
 
-export function sumRemaining(songs: readonly Song[], bought: ReadonlySet<string>, progress: Progress): Remaining {
+export function sumRemaining(
+  songs: readonly Song[],
+  bought: ReadonlySet<string>,
+  skipped: ReadonlySet<string>,
+  progress: Progress,
+): Remaining {
   const all = emptyTotals()
   const unlocked = emptyTotals()
   let allCount = 0
   let unlockedCount = 0
+  let allSkippedCount = 0
+  let unlockedSkippedCount = 0
 
   for (const song of songs) {
     if (!isPurchasable(song) || bought.has(song.id)) continue
 
     const available = isUnlocked(song, progress)
+
+    if (skipped.has(song.id)) {
+      allSkippedCount += 1
+      if (available) unlockedSkippedCount += 1
+      continue
+    }
+
     allCount += 1
     if (available) unlockedCount += 1
 
@@ -32,7 +49,7 @@ export function sumRemaining(songs: readonly Song[], bought: ReadonlySet<string>
     }
   }
 
-  return { all, unlocked, allCount, unlockedCount }
+  return { all, unlocked, allCount, unlockedCount, allSkippedCount, unlockedSkippedCount }
 }
 
 export const grandTotal = (totals: TokenTotals): number => TOKENS.reduce((sum, token) => sum + totals[token], 0)

@@ -15,93 +15,130 @@ interface Props {
   song: Song
   bought: boolean
   locked: boolean
+  skipped: boolean
   onToggle: () => void
+  onToggleSkip: () => void
 }
 
-export function SongCard({ song, bought, locked, onToggle }: Props) {
+export function SongCard({ song, bought, locked, skipped, onToggle, onToggleSkip }: Props) {
   const awarded = song.stage === 'awarded'
   const costs = TOKENS.filter((token) => song.cost[token] !== undefined)
+  const faded = skipped && !bought
 
+  // The skip checkbox is a sibling of the buy button, not a child: a button may not contain
+  // another interactive control.
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      disabled={awarded}
-      aria-pressed={bought}
+    <div
       className={[
-        'flex h-full min-h-0 w-full items-stretch gap-2.5 overflow-hidden rounded-xl border p-2 text-left transition',
-        awarded ? 'cursor-default' : 'cursor-pointer hover:border-white/25 hover:bg-white/[0.07]',
+        'flex h-full min-h-0 w-full items-stretch gap-2.5 overflow-hidden rounded-xl border p-2 transition',
+        awarded ? '' : 'hover:border-white/25 hover:bg-white/[0.07]',
         bought
           ? 'border-emerald-500/40 bg-emerald-500/10'
-          : locked
-            ? 'border-white/5 bg-white/[0.015]'
-            : 'border-white/12 bg-white/[0.04]',
+          : skipped
+            ? 'border-dashed border-white/12 bg-white/[0.02]'
+            : locked
+              ? 'border-white/5 bg-white/[0.015]'
+              : 'border-white/12 bg-white/[0.04]',
       ].join(' ')}
     >
-      <div className="relative aspect-square h-full shrink-0">
-        <img
-          src={songCover(song.id)}
-          alt=""
-          className={[
-            'size-full rounded-lg object-cover transition',
-            bought ? 'opacity-40 saturate-50' : locked ? 'opacity-45 grayscale' : '',
-          ].join(' ')}
-        />
-        {bought && (
-          <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-neutral-950 shadow">
-            ✓
-          </span>
-        )}
-        {locked && !bought && (
-          <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-neutral-800 text-xs text-neutral-400 ring-1 ring-white/10">
-            🔒
-          </span>
-        )}
-      </div>
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div
-          className={[
-            'line-clamp-2 text-[13px] leading-snug font-semibold',
-            bought ? 'text-neutral-500 line-through' : locked ? 'text-neutral-400' : 'text-neutral-50',
-          ].join(' ')}
-        >
-          {song.name}
-        </div>
-
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          {awarded ? (
-            <span className="rounded bg-white/5 px-1.5 py-0.5 text-xs text-neutral-400">{song.gainedAt}</span>
-          ) : (
-            costs.map((token) => (
-              <TokenAmount key={token} token={token} amount={song.cost[token] ?? 0} size="md" muted={bought} />
-            ))
+      <button
+        type="button"
+        onClick={onToggle}
+        disabled={awarded}
+        aria-pressed={bought}
+        className={[
+          'flex min-h-0 min-w-0 flex-1 items-stretch gap-2.5 text-left transition',
+          awarded ? 'cursor-default' : 'cursor-pointer',
+          faded ? 'opacity-45' : '',
+        ].join(' ')}
+      >
+        <div className="relative aspect-square h-full shrink-0">
+          <img
+            src={songCover(song.id)}
+            alt=""
+            className={[
+              'size-full rounded-lg object-cover transition',
+              bought ? 'opacity-40 saturate-50' : locked || skipped ? 'opacity-45 grayscale' : '',
+            ].join(' ')}
+          />
+          {bought && (
+            <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-neutral-950 shadow">
+              ✓
+            </span>
+          )}
+          {locked && !bought && (
+            <span className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-neutral-800 text-xs text-neutral-400 ring-1 ring-white/10">
+              🔒
+            </span>
           )}
         </div>
 
-        <dl className="mt-auto space-y-0.5 text-[11px] leading-tight text-neutral-400">
-          <div className="flex gap-1.5">
-            <dt className="shrink-0 text-neutral-600">Mastery</dt>
-            <dd className="truncate">{song.mastery}</dd>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div
+            className={[
+              'line-clamp-2 text-[13px] leading-snug font-semibold',
+              bought ? 'text-neutral-500 line-through' : locked || skipped ? 'text-neutral-400' : 'text-neutral-50',
+            ].join(' ')}
+          >
+            {song.name}
           </div>
-          <div className="flex gap-1.5">
-            <dt className="shrink-0 text-neutral-600">Concert</dt>
-            <dd className="truncate">{song.concert}</dd>
-          </div>
-        </dl>
-      </div>
 
-      {song.priority && (
-        <span
-          className={[
-            'h-fit shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap ring-1 ring-inset',
-            PRIORITY_STYLE[song.priority] ?? 'bg-white/5 text-neutral-400 ring-white/10',
-            bought ? 'opacity-40' : '',
-          ].join(' ')}
-        >
-          {song.priority.replace(' Priority', '').replace(' Value', '')}
-        </span>
-      )}
-    </button>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {awarded ? (
+              <span className="rounded bg-white/5 px-1.5 py-0.5 text-xs text-neutral-400">{song.gainedAt}</span>
+            ) : (
+              costs.map((token) => (
+                <TokenAmount key={token} token={token} amount={song.cost[token] ?? 0} size="md" muted={bought || skipped} />
+              ))
+            )}
+          </div>
+
+          <dl className="mt-auto space-y-0.5 text-[11px] leading-tight text-neutral-400">
+            <div className="flex gap-1.5">
+              <dt className="shrink-0 text-neutral-600">Mastery</dt>
+              <dd className="truncate">{song.mastery}</dd>
+            </div>
+            <div className="flex gap-1.5">
+              <dt className="shrink-0 text-neutral-600">Concert</dt>
+              <dd className="truncate">{song.concert}</dd>
+            </div>
+          </dl>
+        </div>
+      </button>
+
+      <div className="flex shrink-0 flex-col items-end justify-between gap-1">
+        {song.priority ? (
+          <span
+            className={[
+              'rounded px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap ring-1 ring-inset',
+              PRIORITY_STYLE[song.priority] ?? 'bg-white/5 text-neutral-400 ring-white/10',
+              bought || skipped ? 'opacity-40' : '',
+            ].join(' ')}
+          >
+            {song.priority.replace(' Priority', '').replace(' Value', '')}
+          </span>
+        ) : (
+          <span />
+        )}
+
+        {!awarded && (
+          <label
+            title="Never buying this one — leave its cost out of the totals"
+            className={[
+              'flex cursor-pointer items-center gap-1 text-[10px] leading-none whitespace-nowrap transition',
+              skipped ? 'text-amber-300/80' : 'text-neutral-600 hover:text-neutral-300',
+            ].join(' ')}
+          >
+            Skip
+            <input
+              type="checkbox"
+              checked={skipped}
+              onChange={onToggleSkip}
+              className="size-3.5 cursor-pointer opacity-45 transition checked:opacity-100 hover:opacity-100 accent-amber-400"
+            />
+          </label>
+        )}
+      </div>
+    </div>
   )
 }

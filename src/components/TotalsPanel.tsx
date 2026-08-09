@@ -7,10 +7,11 @@ interface Props {
   title: string
   totals: TokenTotals
   songCount: number
+  skippedCount: number
   accent: 'amber' | 'neutral'
 }
 
-export function TotalsPanel({ title, totals, songCount, accent }: Props) {
+export function TotalsPanel({ title, totals, songCount, skippedCount, accent }: Props) {
   const highlighted = accent === 'amber'
 
   return (
@@ -22,7 +23,10 @@ export function TotalsPanel({ title, totals, songCount, accent }: Props) {
     >
       <div className="shrink-0 leading-tight">
         <h2 className={`text-[11px] font-semibold ${highlighted ? 'text-amber-300' : 'text-neutral-300'}`}>{title}</h2>
-        <p className="text-[10px] text-neutral-500">{songCount} left</p>
+        <p className="text-[10px] text-neutral-500">
+          {songCount} left
+          {skippedCount > 0 && <span className="text-amber-300/70"> · {skippedCount} skipped</span>}
+        </p>
       </div>
 
       <div className="flex min-w-0 flex-1 items-center justify-around gap-1">
