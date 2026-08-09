@@ -53,7 +53,9 @@ export function TotalsPanel({ title, totals, songCount, skippedCount, accent, st
   return (
     <section className={`flex min-w-0 flex-1 items-center gap-3 rounded-lg border px-3 py-1.5 ${frame}`}>
       {heading}
-      <div className="flex min-w-0 flex-1 items-center justify-around gap-1">{tokens}</div>
+      {/* Wraps rather than overflowing: the tokens do not shrink, and without this they spill
+          out of the panel and paint over whatever sits next to it. */}
+      <div className="flex min-w-0 flex-1 flex-wrap items-center justify-around gap-x-2 gap-y-0.5">{tokens}</div>
       {sum}
     </section>
   )

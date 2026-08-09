@@ -10,10 +10,11 @@ import type { ViewProps } from './viewProps'
 const CARD_HEIGHT = 'h-28'
 
 /**
- * Portrait layout: a pinned header over one scrolling column of songs, split into stage
- * sections whose headings stick to the top of the scroller.
+ * A pinned header over a scrolling list of songs, split into stage sections whose headings
+ * stick to the top of the scroller. Used by phones and by any window too narrow or too tall
+ * for the columns.
  */
-export function MobileView({
+export function NarrowView({
   songsByStage,
   progress,
   onSelectProgress,
@@ -44,7 +45,7 @@ export function MobileView({
 
         {/* Side by side once the header can no longer afford two stacked rows. */}
         <div className="flex flex-col gap-2 short:flex-row short:items-start">
-          <div className="short:w-2/5">
+          <div className="w-full max-w-lg short:w-2/5">
             <StagePicker progress={progress} onSelect={onSelectProgress} layout="grid" />
           </div>
 
@@ -83,7 +84,7 @@ export function MobileView({
             </h2>
 
             {/* Portrait tablets and portrait monitors are wide enough for more than one column. */}
-            <div className="grid gap-2 py-2 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-2 py-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {songs.map((song) => (
                 // min-w-0: grid items default to min-content width, which a card would exceed.
                 <div key={song.id} className={`min-w-0 ${CARD_HEIGHT}`}>

@@ -37,17 +37,23 @@ it: the list of songs you are never buying outlives a single career.
 
 ## Layouts
 
-There are two, picked by `(orientation: portrait), (max-width: 900px)` and swapped live when
-you rotate the device:
+There are two, swapped live as the window resizes or the device rotates:
 
 | Layout | Shape |
 | --- | --- |
 | Wide | One screenful, no scrolling. Each stage is a column, cards shrink to the window height |
-| Narrow | A pinned header over one scrolling list, stages as sections with sticky headings |
+| Narrow | A pinned header over a scrolling list, stages as sections with sticky headings |
 
-The narrow layout goes to two card columns from 640px and three from 1024px, so a portrait
-tablet or a rotated monitor is not one thin ribbon of cards. Below 520px of height, a landscape
-phone, the header drops its hint line and puts the stage picker beside the totals.
+The wide layout is the one that has to be earned, because fitting a whole career on one screen
+costs both dimensions: five columns of readable cards need the width, and eight stacked rows
+need the height. It is used only above 1700px wide and 820px tall, and only in landscape.
+Everything else, phones, half-screen windows, short windows and rotated monitors, gets the
+narrow layout, which scrolls and so has neither constraint.
+
+The narrow layout adds a card column at each of 640, 1024, 1280 and 1536px, so a portrait
+tablet or a half-screen desktop window is not one thin ribbon of cards. Below 520px of height,
+meaning a landscape phone, the header drops its hint line and puts the stage picker beside the
+totals.
 
 ## Data
 

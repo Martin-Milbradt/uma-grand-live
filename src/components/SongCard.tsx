@@ -76,16 +76,17 @@ export function SongCard({ song, bought, locked, skipped, onToggle, onToggleSkip
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col">
+          {/* shrink-0: a short card must clip the mastery lines below, never the title. */}
           <div
             className={[
-              'line-clamp-2 text-[13px] leading-snug font-semibold',
+              'line-clamp-2 shrink-0 text-[13px] leading-snug font-semibold',
               bought ? 'text-neutral-500 line-through' : locked || skipped ? 'text-neutral-400' : 'text-neutral-50',
             ].join(' ')}
           >
             {song.name}
           </div>
 
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+          <div className="mt-1.5 flex shrink-0 flex-wrap items-center gap-1.5">
             {awarded ? (
               <span className="rounded bg-white/5 px-1.5 py-0.5 text-xs text-neutral-400">{song.gainedAt}</span>
             ) : (
@@ -95,7 +96,7 @@ export function SongCard({ song, bought, locked, skipped, onToggle, onToggleSkip
             )}
           </div>
 
-          <dl className="mt-auto space-y-0.5 text-[11px] leading-tight text-neutral-400">
+          <dl className="mt-auto min-h-0 space-y-0.5 overflow-hidden text-[11px] leading-tight text-neutral-400">
             <div className="flex gap-1.5">
               <dt className="shrink-0 text-neutral-600">Mastery</dt>
               <dd className="truncate">{song.mastery}</dd>

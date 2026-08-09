@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { DesktopView } from './components/DesktopView'
-import { MobileView } from './components/MobileView'
+import { NarrowView } from './components/NarrowView'
 import type { ViewProps } from './components/viewProps'
+import { WideView } from './components/WideView'
 import { SONGS } from './data/songs'
 import { isAutoOwned, PROGRESS_ORDER, STAGE_ORDER } from './stages'
 import { sumRemaining } from './totals'
@@ -10,10 +10,13 @@ import { usePersistentState } from './usePersistentState'
 import type { Progress, Song } from './types'
 
 /**
- * Anything taller than it is wide, plus any window too narrow for the five columns. The
- * desktop layout packs a whole career into one screenful, which only works given the width.
+ * The wide layout fits a whole career on one screen, which costs it both dimensions: five
+ * columns of readable cards need the width, and eight stacked rows need the height. Miss
+ * either and the cards squeeze down to unreadable, so hand those windows to the narrow
+ * layout, which scrolls instead. A half-screen window on a 1080p monitor is caught by the
+ * width, a short one by the height, and a rotated monitor by the orientation.
  */
-const MOBILE_QUERY = '(orientation: portrait), (max-width: 900px)'
+const NARROW_QUERY = '(max-width: 1700px), (max-height: 820px), (orientation: portrait)'
 
 const SONGS_BY_STAGE = STAGE_ORDER.map((stage) => ({
   stage,
@@ -40,7 +43,7 @@ export default function App() {
   // Songs the user never intends to buy. Kept in its own key so Reset leaves the list alone.
   const [skipped, setSkipped] = usePersistentState<Set<string>>('grand-live.skipped', new Set(), reviveIds)
 
-  const mobile = useMediaQuery(MOBILE_QUERY)
+  const narrow = useMediaQuery(NARROW_QUERY)
   const remaining = useMemo(() => sumRemaining(SONGS, bought, skipped, progress), [bought, skipped, progress])
 
   const isOwned = (song: Song): boolean => bought.has(song.id) || isAutoOwned(song, progress)
@@ -62,5 +65,5 @@ export default function App() {
     },
   }
 
-  return mobile ? <MobileView {...view} /> : <DesktopView {...view} />
+  return narrow ? <NarrowView {...view} /> : <WideView {...view} />
 }

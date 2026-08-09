@@ -6,9 +6,9 @@ import type { ViewProps } from './viewProps'
 
 /**
  * One screenful, no scrolling: every stage is a column and the cards shrink to fit the
- * window height.
+ * window height. Needs roughly 1140px of width before the header starts to overflow.
  */
-export function DesktopView({
+export function WideView({
   songsByStage,
   progress,
   onSelectProgress,
