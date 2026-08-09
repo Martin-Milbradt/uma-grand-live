@@ -3,16 +3,26 @@ import type { Progress, Song, Stage } from './types'
 interface StageInfo {
   /** Column heading in the song grid. */
   label: string
+  /** Stand-in for `label` where there is no room for it, such as the narrow stage picker. */
+  short: string
   /** When the concert that unlocks this tier happens, per the guide. */
   turn: string
 }
 
 export const STAGE_INFO: Record<Stage, StageInfo> = {
-  start: { label: 'From the start', turn: 'Junior Year' },
-  concert1: { label: 'After 1st Concert', turn: 'Junior Late Dec' },
-  concert2: { label: 'After 2nd Concert', turn: 'Classic Late Jun' },
-  concert3: { label: 'After 3rd Concert', turn: 'Classic Late Dec' },
-  awarded: { label: 'Awarded free', turn: 'Fixed turns' },
+  start: { label: 'From the start', short: 'Start', turn: 'Junior Year' },
+  concert1: { label: 'After 1st Concert', short: '1st', turn: 'Junior Late Dec' },
+  concert2: { label: 'After 2nd Concert', short: '2nd', turn: 'Classic Late Jun' },
+  concert3: { label: 'After 3rd Concert', short: '3rd', turn: 'Classic Late Dec' },
+  awarded: { label: 'Awarded free', short: 'Free', turn: 'Fixed turns' },
+}
+
+export const STAGE_ACCENT: Record<Stage, string> = {
+  start: 'text-stage-0',
+  concert1: 'text-stage-1',
+  concert2: 'text-stage-2',
+  concert3: 'text-stage-3',
+  awarded: 'text-stage-4',
 }
 
 /** Career order of the purchasable tiers. `awarded` is excluded: those songs are never bought. */

@@ -35,6 +35,20 @@ column header carries the same count for its own tier.
 `Reset` clears every purchase and returns the stage to *From the start*. Skipped songs survive
 it: the list of songs you are never buying outlives a single career.
 
+## Layouts
+
+There are two, picked by `(orientation: portrait), (max-width: 900px)` and swapped live when
+you rotate the device:
+
+| Layout | Shape |
+| --- | --- |
+| Wide | One screenful, no scrolling. Each stage is a column, cards shrink to the window height |
+| Narrow | A pinned header over one scrolling list, stages as sections with sticky headings |
+
+The narrow layout goes to two card columns from 640px and three from 1024px, so a portrait
+tablet or a rotated monitor is not one thin ribbon of cards. Below 520px of height, a landscape
+phone, the header drops its hint line and puts the stage picker beside the totals.
+
 ## Data
 
 Song names, costs, bonuses and unlock tiers are scraped from
@@ -57,8 +71,9 @@ npm run typecheck
 npm run build      # regenerates grand-live.html
 ```
 
-The song grid sizes its rows to the viewport, so it fits any window height without cutting off
-the last card. `npm run build` must be re-run to fold changes into `grand-live.html`.
+`App.tsx` owns all the state and hands the same `ViewProps` to either `DesktopView` or
+`MobileView`; the two differ in arrangement only, never in data. `npm run build` must be re-run
+to fold changes into `grand-live.html`.
 
 ## Publishing
 

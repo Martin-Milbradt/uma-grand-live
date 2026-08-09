@@ -18,9 +18,11 @@ interface Props {
   skipped: boolean
   onToggle: () => void
   onToggleSkip: () => void
+  /** Grows the skip control into a finger-sized target. */
+  touch?: boolean
 }
 
-export function SongCard({ song, bought, locked, skipped, onToggle, onToggleSkip }: Props) {
+export function SongCard({ song, bought, locked, skipped, onToggle, onToggleSkip, touch = false }: Props) {
   const awarded = song.stage === 'awarded'
   const costs = TOKENS.filter((token) => song.cost[token] !== undefined)
   const faded = skipped && !bought
@@ -125,7 +127,8 @@ export function SongCard({ song, bought, locked, skipped, onToggle, onToggleSkip
           <label
             title="Never buying this one — leave its cost out of the totals"
             className={[
-              'flex cursor-pointer items-center gap-1 text-[10px] leading-none whitespace-nowrap transition',
+              'flex cursor-pointer items-center leading-none whitespace-nowrap transition',
+              touch ? '-mr-1 -mb-1 gap-1.5 rounded-md px-2 py-2.5 text-[11px]' : 'gap-1 text-[10px]',
               skipped ? 'text-amber-300/80' : 'text-neutral-600 hover:text-neutral-300',
             ].join(' ')}
           >
@@ -134,7 +137,10 @@ export function SongCard({ song, bought, locked, skipped, onToggle, onToggleSkip
               type="checkbox"
               checked={skipped}
               onChange={onToggleSkip}
-              className="size-3.5 cursor-pointer opacity-45 transition checked:opacity-100 hover:opacity-100 accent-amber-400"
+              className={[
+                'cursor-pointer opacity-45 transition checked:opacity-100 hover:opacity-100 accent-amber-400',
+                touch ? 'size-4.5' : 'size-3.5',
+              ].join(' ')}
             />
           </label>
         )}

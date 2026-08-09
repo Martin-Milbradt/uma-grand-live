@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/** A landscape phone: wide enough, but with almost no height to give the header. */
+@custom-variant short (@media (max-height: 520px));
+
 @theme {
   --color-stage-0: oklch(0.72 0.14 250);
   --color-stage-1: oklch(0.74 0.15 165);
