@@ -3,7 +3,15 @@ import { OwnedBadge, ResetButton, StagePicker } from './components/HeaderControl
 import { SongCard } from './components/SongCard'
 import { TotalsPanel } from './components/TotalsPanel'
 import { SONGS } from './data/songs'
-import { isAutoOwned, isUnlocked, PROGRESS_ORDER, STAGE_ACCENT, STAGE_INFO, STAGE_ORDER } from './stages'
+import {
+  isAutoOwned,
+  isEverythingUnlocked,
+  isUnlocked,
+  PROGRESS_ORDER,
+  STAGE_ACCENT,
+  STAGE_INFO,
+  STAGE_ORDER,
+} from './stages'
 import { sumRemaining } from './totals'
 import { usePersistentState } from './usePersistentState'
 import type { Progress, Song } from './types'
@@ -46,6 +54,7 @@ export default function App() {
   const remaining = useMemo(() => sumRemaining(SONGS, bought, skipped, progress), [bought, skipped, progress])
 
   const isOwned = (song: Song): boolean => bought.has(song.id) || isAutoOwned(song, progress)
+  const everythingUnlocked = isEverythingUnlocked(progress)
 
   const reset = () => {
     setBought(new Set())
@@ -75,23 +84,25 @@ export default function App() {
 
         {/* Side by side once there is width for it, or when the height leaves no other option. */}
         <div className="flex flex-col gap-2 xl:flex-row short:flex-row">
-          <div className="min-w-0 flex-1">
-            <TotalsPanel
-              title="Still to buy — unlocked"
-              totals={remaining.unlocked}
-              songCount={remaining.unlockedCount}
-              skippedCount={remaining.unlockedSkippedCount}
-              accent="amber"
-            />
-          </div>
+          {!everythingUnlocked && (
+            <div className="min-w-0 flex-1">
+              <TotalsPanel
+                title="Still to buy — unlocked"
+                totals={remaining.unlocked}
+                songCount={remaining.unlockedCount}
+                skippedCount={remaining.unlockedSkippedCount}
+                accent="amber"
+              />
+            </div>
+          )}
 
           <div className="min-w-0 flex-1">
             <TotalsPanel
-              title="Still to buy — total"
+              title={everythingUnlocked ? 'Still to buy' : 'Still to buy — total'}
               totals={remaining.all}
               songCount={remaining.allCount}
               skippedCount={remaining.allSkippedCount}
-              accent="neutral"
+              accent={everythingUnlocked ? 'amber' : 'neutral'}
             />
           </div>
         </div>

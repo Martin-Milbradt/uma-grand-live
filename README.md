@@ -22,7 +22,8 @@ The two header panels show what you still have to pay, broken down per Performan
 | Still to buy, unlocked | Unbought, unskipped songs already in the shop at your current stage |
 | Still to buy, total | Every unbought, unskipped song across the whole career |
 
-Each panel's subline says how many songs it left out as skipped.
+Each panel's subline says how many songs it left out as skipped. At *After 3rd Concert* every
+song is in the shop, so the two would agree and only one panel is shown, titled `Still to buy`.
 
 `Make Debut!` and `Girls' Legend U` are awarded free rather than bought, so they never count
 towards either total. `Make Debut!` ticks itself once you reach the 1st Concert, since it is

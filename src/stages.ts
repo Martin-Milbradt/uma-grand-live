@@ -34,6 +34,10 @@ export const STAGE_ORDER: readonly Stage[] = [...PROGRESS_ORDER, 'awarded']
 /** Awarded songs cost nothing, so they are never part of a "still to buy" total. */
 export const isPurchasable = (song: Song): boolean => song.stage !== 'awarded'
 
+/** At the last tier every song is in the shop, so "unlocked" and "total" say the same thing. */
+export const isEverythingUnlocked = (progress: Progress): boolean =>
+  progress === PROGRESS_ORDER[PROGRESS_ORDER.length - 1]
+
 /**
  * Awarded songs that are already in hand by a given stage, so they show as owned without
  * being clicked. Make Debut! arrives 4 turns into Junior year, well before the 1st Concert.
