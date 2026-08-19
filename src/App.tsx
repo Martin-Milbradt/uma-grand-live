@@ -105,6 +105,10 @@ export default function App() {
               accent={everythingUnlocked ? 'amber' : 'neutral'}
             />
           </div>
+
+          {/* Once the two panels merge into one, it keeps the half the unlocked panel had rather
+              than stretching over both. A stacked header has no second half to leave empty. */}
+          {everythingUnlocked && <div className="hidden min-w-0 flex-1 xl:block short:block" aria-hidden />}
         </div>
       </header>
 
