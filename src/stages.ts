@@ -40,10 +40,11 @@ export const isEverythingUnlocked = (progress: Progress): boolean =>
 
 /**
  * Awarded songs that are already in hand by a given stage, so they show as owned without
- * being clicked. Make Debut! arrives 4 turns into Junior year, well before the 1st Concert.
+ * being clicked. Make Debut! arrives 4 turns into Junior year, so it is in hand for all but
+ * a sliver of the career and counts as owned from the start.
  * Girls' Legend U is omitted: it lands in Senior year, past the last stage on the selector.
  */
-const AUTO_OWNED_FROM: Record<string, Progress> = { gc_022_debut: 'concert1' }
+const AUTO_OWNED_FROM: Record<string, Progress> = { gc_022_debut: 'start' }
 
 export function isAutoOwned(song: Song, progress: Progress): boolean {
   const from = AUTO_OWNED_FROM[song.id]
