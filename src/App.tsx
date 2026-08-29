@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { OwnedBadge, ResetButton, StagePicker } from './components/HeaderControls'
+import { LightHelloTracker, OwnedBadge, ResetButton, StagePicker } from './components/HeaderControls'
 import { SongCard } from './components/SongCard'
 import { TotalsPanel } from './components/TotalsPanel'
 import { SONGS } from './data/songs'
@@ -12,6 +12,7 @@ import {
   STAGE_INFO,
   STAGE_ORDER,
 } from './stages'
+import { LIGHT_HELLO_LEVELS, type LightHelloLevel } from './data/lightHello'
 import { sumRemaining } from './totals'
 import { usePersistentState } from './usePersistentState'
 import type { Progress, Song } from './types'
@@ -30,6 +31,12 @@ const isProgress = (value: unknown): value is Progress =>
 
 const reviveIds = (raw: unknown): Set<string> | null =>
   Array.isArray(raw) ? new Set(raw.filter((id): id is string => typeof id === 'string')) : null
+
+const reviveDateStage = (raw: unknown): number | null =>
+  typeof raw === 'number' && Number.isInteger(raw) && raw >= 0 && raw <= 5 ? raw : null
+
+const reviveLevel = (raw: unknown): LightHelloLevel | null =>
+  typeof raw === 'number' && (LIGHT_HELLO_LEVELS as readonly number[]).includes(raw) ? (raw as LightHelloLevel) : null
 
 const withToggled = (ids: ReadonlySet<string>, id: string): Set<string> => {
   const next = new Set(ids)
@@ -50,6 +57,10 @@ export default function App() {
   const [bought, setBought] = usePersistentState<Set<string>>('grand-live.bought', new Set(), reviveIds)
   // Songs the user never intends to buy. Kept in its own key so Reset leaves the list alone.
   const [skipped, setSkipped] = usePersistentState<Set<string>>('grand-live.skipped', new Set(), reviveIds)
+  // Highest Light Hello date already seen this career; 0 while the chain is still locked.
+  const [dateStage, setDateStage] = usePersistentState<number>('grand-live.lightHello', 0, reviveDateStage)
+  // Card level, which the date rewards scale with. Not part of Reset: it outlives a career.
+  const [cardLevel, setCardLevel] = usePersistentState<LightHelloLevel>('grand-live.lightHelloLevel', 50, reviveLevel)
 
   const remaining = useMemo(() => sumRemaining(SONGS, bought, skipped, progress), [bought, skipped, progress])
 
@@ -59,6 +70,7 @@ export default function App() {
   const reset = () => {
     setBought(new Set())
     setProgress('start')
+    setDateStage(0)
   }
 
   return (
@@ -76,6 +88,12 @@ export default function App() {
           {/* Slots in beside the title once the row is wide enough to hold it. */}
           <div className="order-last w-full md:order-none md:w-auto md:min-w-0 md:max-w-lg md:flex-1">
             <StagePicker progress={progress} onSelect={setProgress} />
+          </div>
+
+          {/* Needs more room than the stage picker, so it holds out for a wider screen before
+              joining the top row; below that it wraps into its own bar. */}
+          <div className="order-last w-full lg:order-none lg:w-auto lg:min-w-0 lg:max-w-md lg:flex-1">
+            <LightHelloTracker stage={dateStage} level={cardLevel} onSelect={setDateStage} onLevelChange={setCardLevel} />
           </div>
 
           <OwnedBadge owned={SONGS.filter(isOwned).length} total={SONGS.length} />
